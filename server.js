@@ -37,9 +37,11 @@ app.post("/api/auth/login", async (req, res) => {
     .eq("email", email)
     .single();
   if (error || !user) return res.status(401).json({ message: "بيانات غلط" });
-  console.log('password:', password, 'hash:', user.password);
-   const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(401).json({ message: "بيانات غلط" });
+  console.log('password received:', password);
+  console.log('hash from db:', user.password);
+  const valid = await bcrypt.compare(password, user.password);
+  console.log('valid:', valid);
+  if (!valid) return res.status(401).json({ message: "بيانات غلط", debug: { password, hash: user.password, valid } });
   const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
   res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
 });
