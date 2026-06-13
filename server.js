@@ -37,7 +37,8 @@ app.post("/api/auth/login", async (req, res) => {
     .eq("email", email)
     .single();
   if (error || !user) return res.status(401).json({ message: "بيانات غلط" });
-  const valid = await bcrypt.compare(password, user.password);
+  console.log('password:', password, 'hash:', user.password);
+   const valid = await bcrypt.compare(password, user.password);
   if (!valid) return res.status(401).json({ message: "بيانات غلط" });
   const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
   res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
